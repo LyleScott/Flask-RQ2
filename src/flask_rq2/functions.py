@@ -115,7 +115,6 @@ class JobFunctions(object):
         :rtype: ~flask_rq2.job.FlaskJob
         """
         queue_name = kwargs.pop('queue', self.queue_name)
-
         timeout = kwargs.pop('timeout', self.timeout)
         result_ttl = kwargs.pop('result_ttl', self.result_ttl)
         ttl = kwargs.pop('ttl', self.ttl)
@@ -124,6 +123,7 @@ class JobFunctions(object):
         at_front = kwargs.pop('at_front', self._at_front)
         meta = kwargs.pop('meta', self._meta)
         description = kwargs.pop('description', self._description)
+        retry = kwargs.pop("retry", None)
         return self.rq.get_queue(queue_name).enqueue_call(
             self.wrapped,
             args=args,
@@ -136,6 +136,7 @@ class JobFunctions(object):
             at_front=at_front,
             meta=meta,
             description=description,
+            retry=retry,
         )
 
     def schedule(self, time_or_delta, *args, **kwargs):
