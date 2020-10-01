@@ -15,7 +15,7 @@ class JobFunctions(object):
     functions = ['queue', 'schedule', 'cron']
 
     def __init__(self, rq, wrapped, queue_name, timeout, result_ttl, ttl,
-                 depends_on, at_front, meta, description):
+                 depends_on, at_front, meta, description, retry):
         self.rq = rq
         self.wrapped = wrapped
         self._queue_name = queue_name
@@ -28,6 +28,7 @@ class JobFunctions(object):
         self._at_front = at_front
         self._meta = meta
         self._description = description
+        self._retry = retry
 
     def __repr__(self):
         full_name = '.'.join([self.wrapped.__module__, self.wrapped.__name__])
@@ -123,7 +124,7 @@ class JobFunctions(object):
         at_front = kwargs.pop('at_front', self._at_front)
         meta = kwargs.pop('meta', self._meta)
         description = kwargs.pop('description', self._description)
-        retry = kwargs.pop("retry", None)
+        retry = kwargs.pop("retry", self._retry)
         return self.rq.get_queue(queue_name).enqueue_call(
             self.wrapped,
             args=args,
